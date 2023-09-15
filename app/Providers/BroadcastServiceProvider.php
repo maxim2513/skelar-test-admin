@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace App\Providers;
 
@@ -13,7 +14,8 @@ class BroadcastServiceProvider extends ServiceProvider
     public function boot(): void
     {
         Broadcast::routes();
-
-        require base_path('routes/channels.php');
+        Broadcast::channel('App.Models.User.{id}', function ($user, $id) {
+            return (int) $user->id === (int) $id;
+        });
     }
 }

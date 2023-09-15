@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace Tests\Feature\Auth;
 
@@ -16,6 +17,18 @@ class AuthenticationTest extends TestCase
         $response = $this->get('/login');
 
         $response->assertStatus(200);
+    }
+
+
+    public function test_log_out_user(): void
+    {
+        $user = User::factory()->create();
+
+
+        $response = $this->actingAs($user)->post('/logout');
+
+        $this->assertGuest();
+        $response->assertStatus(302);
     }
 
     public function test_users_can_authenticate_using_the_login_screen(): void

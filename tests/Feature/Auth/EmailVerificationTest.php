@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace Tests\Feature\Auth;
 
@@ -25,6 +26,37 @@ class EmailVerificationTest extends TestCase
         $response->assertStatus(200);
     }
 
+    public function test_email_verification_notification_home(): void
+    {
+        $user = User::factory()->create([
+            'email_verified_at' => now(),
+        ]);
+
+        $response = $this->actingAs($user)->post('email/verification-notification');
+
+        $response->assertStatus(302);
+    }
+
+    public function test_email_verification_notification_back(): void
+    {
+        $user = User::factory()->create([
+            'email_verified_at' => null,
+        ]);
+        $response = $this->actingAs($user)->post('email/verification-notification');
+        $response->assertStatus(302);
+    }
+
+    public function test_email_verification_screen_cannot_be_rendered(): void
+    {
+        $user = User::factory()->create([
+            'email_verified_at' => now(),
+        ]);
+
+        $response = $this->actingAs($user)->get('/verify-email');
+
+        $response->assertStatus(302);
+    }
+
     public function test_email_can_be_verified(): void
     {
         $user = User::factory()->create([
@@ -42,6 +74,26 @@ class EmailVerificationTest extends TestCase
         $response = $this->actingAs($user)->get($verificationUrl);
 
         Event::assertDispatched(Verified::class);
+        $this->assertTrue($user->fresh()->hasVerifiedEmail());
+        $response->assertRedirect(RouteServiceProvider::HOME.'?verified=1');
+    }
+
+    public function test_email_already_verified(): void
+    {
+        $user = User::factory()->create([
+            'email_verified_at' => now(),
+        ]);
+
+        Event::fake();
+
+        $verificationUrl = URL::temporarySignedRoute(
+            'verification.verify',
+            now()->addMinutes(60),
+            ['id' => $user->id, 'hash' => sha1($user->email)]
+        );
+
+        $response = $this->actingAs($user)->get($verificationUrl);
+
         $this->assertTrue($user->fresh()->hasVerifiedEmail());
         $response->assertRedirect(RouteServiceProvider::HOME.'?verified=1');
     }
