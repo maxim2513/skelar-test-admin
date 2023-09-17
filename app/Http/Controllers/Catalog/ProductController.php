@@ -35,4 +35,19 @@ class ProductController extends Controller
             ]
         );
     }
+
+    public function edit(Product $product): Response
+    {
+        return Inertia::render('Catalog/Product/EditProduct', [
+            'product' => $product,
+        ]);
+    }
+
+    public function update(ProductRequest $productRequest, Product $product): RedirectResponse
+    {
+        $product->fill($productRequest->all());
+        $product->save();
+
+        return redirect()->route('product.list');
+    }
 }

@@ -51,7 +51,7 @@ class RouteServiceProvider extends ServiceProvider
         });
 
         $this->middleware('guest')->group(function () {
-          $this->guestRoutes();
+            $this->guestRoutes();
         });
     }
 
@@ -96,12 +96,21 @@ class RouteServiceProvider extends ServiceProvider
 
     protected function catalogProductRoutes(): void
     {
-        $this->get('/products',[ProductController::class, 'list'])
-            ->name('product.list');
-        $this->get('/product',[ProductController::class, 'create'])
-            ->name('product.create');
-        $this->post('/product',[ProductController::class, 'save'])
-            ->name('product.save');
+        $this->controller(ProductController::class)->group(function () {
+            $this->get('/products', 'list')
+                ->name('product.list');
+            $this->get('/product', 'create')
+                ->name('product.create');
+            $this->post('/product', 'save')
+                ->name('product.save');
+            $this->get('/product/{product}', 'edit')
+                ->name('product.edit')
+                ->where('{product}', '[0-9]+');
+            $this->post('/product/{product}', 'update')
+                ->name('product.update')
+                ->where('{product}', '[0-9]+');
+        });
+
     }
 
     protected function guestRoutes(): void

@@ -3,24 +3,32 @@ import InputError from '@/Components/InputError.vue';
 import InputLabel from '@/Components/InputLabel.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import TextInput from '@/Components/TextInput.vue';
-import {Head, Link, useForm} from '@inertiajs/vue3';
+import {useForm} from '@inertiajs/vue3';
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
+import DangerButton from "@/Components/DangerButton.vue";
+
+const props = defineProps(['product']);
+
 
 const form = useForm({
-    name: '',
-    price: 0,
-    description: '',
+    name: props.product.name,
+    price: props.product.price,
+    description: props.product.description,
 });
 
 const submit = () => {
-    form.post(route('product.save'));
+    form.post(route('product.update', props.product.id));
 };
+
+const bachToList = () => {
+    location.assign(route('product.list'));
+}
 </script>
 
 <template>
     <AuthenticatedLayout>
         <template #header>
-            <h2 class="font-semibold text-xl text-gray-800 leading-tight">New product</h2>
+            <h2 class="font-semibold text-xl text-gray-800 leading-tight">Update product: {{ product.id }} </h2>
         </template>
 
         <div class="py-12">
@@ -77,9 +85,12 @@ const submit = () => {
                         </div>
 
                         <div class="flex items-center justify-end mt-4">
-                            <PrimaryButton class="ml-4" :class="{ 'opacity-25': form.processing }"
+                            <DangerButton type="button" @click="bachToList">
+                                Cancel
+                            </DangerButton>
+                            <PrimaryButton class="ml-4" type="submit" :class="{ 'opacity-25': form.processing }"
                                            :disabled="form.processing">
-                                Create
+                                Save
                             </PrimaryButton>
                         </div>
                     </form>

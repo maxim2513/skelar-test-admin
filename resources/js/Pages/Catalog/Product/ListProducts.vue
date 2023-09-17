@@ -11,7 +11,7 @@ defineProps({
     },
 });
 const editProduct = (id) => {
-
+    location.assign(route('product.edit', id));
 }
 const removeProduct = (id) => {
 
