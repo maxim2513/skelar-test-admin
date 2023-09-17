@@ -12,11 +12,11 @@ use App\Http\Controllers\Auth\PasswordController;
 use App\Http\Controllers\Auth\PasswordResetLinkController;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\Auth\VerifyEmailController;
+use App\Http\Controllers\Catalog\ProductController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Foundation\Support\Providers\RouteServiceProvider as ServiceProvider;
 use Illuminate\Support\Facades\Response;
-
 
 class RouteServiceProvider extends ServiceProvider
 {
@@ -47,6 +47,7 @@ class RouteServiceProvider extends ServiceProvider
         $this->middleware('auth')->group(function () {
             $this->baseAuthRoutes();
             $this->profileRoutes();
+            $this->catalogProductRoutes();
         });
 
         $this->middleware('guest')->group(function () {
@@ -76,7 +77,8 @@ class RouteServiceProvider extends ServiceProvider
 
         $this->post('confirm-password', [ConfirmablePasswordController::class, 'store']);
 
-        $this->put('password', [PasswordController::class, 'update'])->name('password.update');
+        $this->put('password', [PasswordController::class, 'update'])
+            ->name('password.update');
 
         $this->post('logout', [AuthenticatedSessionController::class, 'destroy'])
             ->name('logout');
@@ -84,9 +86,22 @@ class RouteServiceProvider extends ServiceProvider
 
     protected function profileRoutes(): void
     {
-        $this->get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-        $this->patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-        $this->delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+        $this->get('/profile', [ProfileController::class, 'edit'])
+            ->name('profile.edit');
+        $this->patch('/profile', [ProfileController::class, 'update'])
+            ->name('profile.update');
+        $this->delete('/profile', [ProfileController::class, 'destroy'])
+            ->name('profile.destroy');
+    }
+
+    protected function catalogProductRoutes(): void
+    {
+        $this->get('/products',[ProductController::class, 'list'])
+            ->name('product.list');
+        $this->get('/product',[ProductController::class, 'create'])
+            ->name('product.create');
+        $this->post('/product',[ProductController::class, 'save'])
+            ->name('product.save');
     }
 
     protected function guestRoutes(): void
@@ -113,5 +128,4 @@ class RouteServiceProvider extends ServiceProvider
         $this->post('reset-password', [NewPasswordController::class, 'store'])
             ->name('password.store');
     }
-
 }
