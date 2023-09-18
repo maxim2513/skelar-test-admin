@@ -31,7 +31,9 @@ class ProductController extends Controller
     public function list(): Response
     {
         return Inertia::render('Catalog/Product/ListProducts', [
-                'paginatedProduct' => Product::paginate(5),
+                'paginatedProduct' => Product::filterByQueryString()
+                    ->searchByQueryString()
+                    ->paginate(5),
             ]
         );
     }
@@ -55,6 +57,28 @@ class ProductController extends Controller
     {
         $product->delete();
 
-        return redirect()->route('product.list');
+        return redirect()->back();
+    }
+
+    public function deleteForce(int $productId): RedirectResponse
+    {
+        $softDeletedObject = Product::withTrashed()->find($productId);
+
+        if ($softDeletedObject) {
+            $softDeletedObject->forceDelete();
+        }
+
+        return redirect()->back();
+    }
+
+    public function restore(int $productId)
+    {
+        $softDeletedObject = Product::withTrashed()->find($productId);
+
+        if ($softDeletedObject) {
+            $softDeletedObject->restore();
+        }
+
+        return redirect()->route('product.edit', $productId);
     }
 }

@@ -17,7 +17,7 @@ const form = useForm({
 });
 
 const submit = () => {
-    form.post(route('product.update', props.product.id));
+    form.put(route('product.update', props.product.id));
 };
 
 const bachToList = () => {

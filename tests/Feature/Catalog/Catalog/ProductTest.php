@@ -79,7 +79,7 @@ class ProductTest extends TestCase
 
         $productTemplate = [
             'name' => fake()->name(),
-            'price' => fake()->numberBetween(1,10**6),
+            'price' => fake()->numberBetween(1, 10 ** 6),
             'description' => fake()->realText(),
         ];
 
@@ -88,7 +88,7 @@ class ProductTest extends TestCase
 
         $response = $this
             ->actingAs($user)
-            ->post('/product/'.$product->id, $productTemplate);
+            ->put('/product/'.$product->id, $productTemplate);
 
         $this->assertDatabaseHas('products', $productTemplate);
 
@@ -103,6 +103,32 @@ class ProductTest extends TestCase
         $response = $this
             ->actingAs($user)
             ->delete('/product/'.$product->id);
+
+        $response->assertStatus(302);
+    }
+
+    public function testForceDeleteProduct(): void
+    {
+        $user = User::factory()->create();
+        $product = Product::factory()->create();
+        $product->delete();
+
+        $response = $this
+            ->actingAs($user)
+            ->delete('/product/'.$product->id.'/force');
+
+        $response->assertStatus(302);
+    }
+
+    public function testRestoreProduct(): void
+    {
+        $user = User::factory()->create();
+        $product = Product::factory()->create();
+        $product->delete();
+
+        $response = $this
+            ->actingAs($user)
+            ->put('/product/'.$product->id.'/restore');
 
         $response->assertStatus(302);
     }
