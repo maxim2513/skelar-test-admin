@@ -6,11 +6,11 @@ namespace App\Http\Controllers\Catalog;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Catalog\ProductRequest;
 use App\Models\Catalog\Product;
-use App\Providers\RouteServiceProvider;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
+use Illuminate\Http\Response as HttpResponse;
 use Inertia\Inertia;
 use Inertia\Response;
+use function response as baseResponse;
 
 class ProductController extends Controller
 {
@@ -19,7 +19,7 @@ class ProductController extends Controller
         return Inertia::render('Catalog/Product/CreateProduct');
     }
 
-    public function save(ProductRequest $productRequest)
+    public function save(ProductRequest $productRequest): RedirectResponse
     {
         $product = new Product($productRequest->all());
 
@@ -28,7 +28,7 @@ class ProductController extends Controller
         return redirect()->route('product.list');
     }
 
-    public function list(Request $request): Response
+    public function list(): Response
     {
         return Inertia::render('Catalog/Product/ListProducts', [
                 'paginatedProduct' => Product::paginate(5),
@@ -47,6 +47,13 @@ class ProductController extends Controller
     {
         $product->fill($productRequest->all());
         $product->save();
+
+        return redirect()->route('product.list');
+    }
+
+    public function delete(Product $product): RedirectResponse
+    {
+        $product->delete();
 
         return redirect()->route('product.list');
     }

@@ -1,6 +1,7 @@
 <script setup>
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import {TailwindPagination} from 'laravel-vue-pagination';
+import {router} from "@inertiajs/vue3";
 
 defineProps({
     paginatedProduct: {
@@ -14,14 +15,20 @@ const editProduct = (id) => {
     location.assign(route('product.edit', id));
 }
 const removeProduct = (id) => {
-
+    try {
+        router.delete(route('product.delete', id), {
+            onBefore: () => confirm('Are you sure you want to delete this Product?'),
+        });
+    } catch (error) {
+        console.error('An error occurred:', error);
+    }
 }
 const getResults = async (page = 1) => {
-    location.assign(route('product.list', {'page': page}));
+    router.get(route('product.list', {'page': page}));
 }
 
 const createNewProduct = () => {
-    location.assign(route('product.create'));
+    router.get(route('product.create'));
 }
 
 </script>
@@ -35,13 +42,15 @@ const createNewProduct = () => {
         <div class="py-12">
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
                 <div class="p-4 sm:p-8 bg-white shadow sm:rounded-lg">
-                    <button
-                        @click="createNewProduct"
-                        class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mb-4"
-                    >
-                        Create New Product
-                    </button>
-
+                    <div class="flex justify-between">
+                        <div><!-- Other content here --></div>
+                        <button
+                            @click="createNewProduct"
+                            class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mb-4"
+                        >
+                            Create New Product
+                        </button>
+                    </div>
 
                     <ul class="border rounded overflow-hidden">
                         <li v-for="product in paginatedProduct.data" :key="product.id" class="border-b last:border-b-0">

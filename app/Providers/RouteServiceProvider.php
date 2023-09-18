@@ -109,6 +109,9 @@ class RouteServiceProvider extends ServiceProvider
             $this->post('/product/{product}', 'update')
                 ->name('product.update')
                 ->where('{product}', '[0-9]+');
+            $this->delete('/product/{product}', 'delete')
+                ->name('product.delete')
+                ->where('{product}', '[0-9]+');
         });
 
     }

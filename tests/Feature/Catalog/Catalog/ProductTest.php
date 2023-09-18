@@ -94,4 +94,16 @@ class ProductTest extends TestCase
 
         $response->assertStatus(302);
     }
+
+    public function testDeleteProduct(): void
+    {
+        $user = User::factory()->create();
+        $product = Product::factory()->create();
+
+        $response = $this
+            ->actingAs($user)
+            ->delete('/product/'.$product->id);
+
+        $response->assertStatus(302);
+    }
 }

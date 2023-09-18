@@ -3,7 +3,7 @@ import InputError from '@/Components/InputError.vue';
 import InputLabel from '@/Components/InputLabel.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import TextInput from '@/Components/TextInput.vue';
-import {useForm} from '@inertiajs/vue3';
+import {router, useForm} from '@inertiajs/vue3';
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import DangerButton from "@/Components/DangerButton.vue";
 
@@ -21,7 +21,7 @@ const submit = () => {
 };
 
 const bachToList = () => {
-    location.assign(route('product.list'));
+    router.get(route('product.list'));
 }
 </script>
 
