@@ -71,7 +71,7 @@ class ProductController extends Controller
         return redirect()->back();
     }
 
-    public function restore(int $productId)
+    public function restore(int $productId): RedirectResponse
     {
         $softDeletedObject = Product::withTrashed()->find($productId);
 
